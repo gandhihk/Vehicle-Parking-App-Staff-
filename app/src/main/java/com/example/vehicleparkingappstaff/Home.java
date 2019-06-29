@@ -1,6 +1,7 @@
 package com.example.vehicleparkingappstaff;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -46,7 +47,7 @@ public class Home extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-
+    ProgressDialog pDialog;
     TabLayout tabs;
     ViewGroup layout;
     ArrayList<String> slot_maps;
@@ -100,6 +101,9 @@ public class Home extends Fragment {
         level_number=1;
         tabs = frameLayout.findViewById(R.id.tabs);
         layout = frameLayout.findViewById(R.id.layoutSeat);
+        pDialog = new ProgressDialog(getActivity());
+        pDialog.setMessage("Loading...");
+        pDialog.show();
         getMap();
 
         return frameLayout;
@@ -130,7 +134,7 @@ public class Home extends Fragment {
                                     //Toast.makeText(getActivity(), booked_slots, Toast.LENGTH_LONG).show();
                                     createMapForThisLevel(level_num,no_of_slots,booked_slots);
                                 }
-
+                                pDialog.hide();
                                 setUpTabs();
                                 setMap(slot_maps.get(0));
                             }
@@ -181,10 +185,19 @@ public class Home extends Fragment {
 
     void createMapForThisLevel(int level_num, int no_of_slots, String booked_slots)
     {
+        String[] slots = booked_slots.split(" ");
         String seats = "/";
+        boolean flag;
         for(int i=1;i<=no_of_slots;i++)
         {
-            if(booked_slots.contains(String.valueOf(i)))
+            //seats=seats+"A";
+            flag=false;
+            for(String x:slots)
+            {
+                if(x.equals(String.valueOf(i)))
+                    flag=true;
+            }
+            if(flag)
                 seats = seats+"B";
             else
                 seats = seats+"A";

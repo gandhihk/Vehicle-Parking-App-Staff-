@@ -197,7 +197,7 @@ public class Register extends AppCompatActivity
             cancel = true;
         }
         else if(aadhar_no.length()!=12){
-            aadharView.setError(getString(R.string.error_invalid_licence));
+            aadharView.setError("Aadhaar Number is invalid");
             focusView = aadharView;
             cancel = true;
         }

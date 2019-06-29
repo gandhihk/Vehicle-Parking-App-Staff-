@@ -18,7 +18,7 @@ public class Splashscreen extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         Intent intent;
-        if(!isOnline())
+        if(isOnline())
         {
             // Asking for all permissions
 

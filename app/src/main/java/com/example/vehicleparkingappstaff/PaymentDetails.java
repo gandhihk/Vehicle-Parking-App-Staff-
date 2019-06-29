@@ -1,5 +1,6 @@
 package com.example.vehicleparkingappstaff;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -30,6 +31,7 @@ public class PaymentDetails extends AppCompatActivity {
     RequestQueue requestQueue;
     String booking_id,transaction_id,payment_mode;
     ActionBar toolbar;
+    ProgressDialog pDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +51,9 @@ public class PaymentDetails extends AppCompatActivity {
         unique = Integer.valueOf(unique1);
 
         requestQueue = Volley.newRequestQueue(this);
+        pDialog = new ProgressDialog(this);
+        pDialog.setMessage("Loading...");
+        pDialog.show();
         displayPaymentDetails(intent.getStringExtra("type"),unique);
     }
 
@@ -100,11 +105,19 @@ public class PaymentDetails extends AppCompatActivity {
                                 ((TextView)findViewById(R.id.transaction_id)).setText(transaction_id);
                                 ((TextView)findViewById(R.id.payment_mode)).setText(payment_mode);
                                 ((TextView)findViewById(R.id.payment_status)).setText(payment_status);
-                                if(payment_mode.equals("Offline"))
+                                if(payment_mode.equals("Offline") && payment_status.equals("Done"))
+                                    (findViewById(R.id.button)).setVisibility(View.GONE);
+                                else if(payment_mode.equals("Offline"))
                                     ((Button)findViewById(R.id.button)).setText("Collect Cash & Verify");
+                                else if(payment_mode.equals("Online") && payment_status.equals("pending"))
+                                    (findViewById(R.id.button)).setVisibility(View.GONE);
+                                else if(payment_mode.equals("Online") && payment_status.equals("Done"))
+                                    ((Button)findViewById(R.id.button)).setText("Verify");
+                                pDialog.hide();
                             }
                             else if((response.getString("message")).equals("No booking found"))
                             {
+                                pDialog.hide();
                                 findViewById(R.id.table).setVisibility(View.GONE);
                                 Toast.makeText(PaymentDetails.this, "No Booking found !",
                                         Toast.LENGTH_LONG).show();
@@ -129,6 +142,7 @@ public class PaymentDetails extends AppCompatActivity {
     }
 
     public void verify(View view) {
+        pDialog.show();
         Map<String,String> params = new HashMap<>();
         params.put("operation", "verify_payment");
         params.put("booking_id",booking_id);
@@ -149,6 +163,7 @@ public class PaymentDetails extends AppCompatActivity {
                                 findViewById(R.id.button).setVisibility(View.GONE);
                                 findViewById(R.id.verified_img).setVisibility(View.VISIBLE);
                                 findViewById(R.id.successful_verify).setVisibility(View.VISIBLE);
+                                pDialog.hide();
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
